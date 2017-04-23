@@ -4,9 +4,8 @@ const Result = mrequire("core:Data.Result:1.0.0");
 const templateRE = /<%([^%>]+)?%>/g;
 
 
-//= compile :: String -> Result Error Template
-const compile = template => {
-
+//= toJavaScript :: String -> Result String String
+const toJavaScript = template => {
     const formatExpression = text => 'r.push(' + text + ');\n';
 
     const formatLiteral = text =>
@@ -32,9 +31,13 @@ const compile = template => {
     });
     code += 'return r.join("");';
 
-    // console.log(code);
+    return Result.Okay(code);
+};
 
-    return Result.Okay(Function(code));
+
+//= compile :: String -> Result Error Template
+const compile = template => {
+    return toJavaScript(template).andThen(js => Result.Okay(Function(js)));
 };
 
 
@@ -49,5 +52,7 @@ const apply = template => model => {
 
 
 module.exports = {
-    apply
+    apply,
+    compile,
+    toJavaScript
 };
