@@ -24,3 +24,12 @@ Promise.all([
         Assert.deepEqual(Template.apply(output[0])(TEMPLATE_TEST_DATA), Result.Okay(output[1]));
     });
 });
+
+FileSystem.readFile(__dirname + "/TemplateData/0002.input.txt")
+    .then(output => {
+        suite.case("given a text template with broken JavaScript will return an Result.Error", () => {
+            Assert.deepEqual(Template.apply(output)(TEMPLATE_TEST_DATA), Result.Error("Unexpected token {"));
+        });
+    });
+
+

@@ -1,41 +1,51 @@
 const Result = mrequire("core:Data.Result:1.0.0");
 
 
+const templateRE = /<%([^%>]+)?%>/g;
+
+
 //= compile :: String -> Result Error Template
 const compile = template => {
-    const re = /<%([^%>]+)?%>/g;
+
+    const formatExpression = text => 'r.push(' + text + ');\n';
+
+    const formatLiteral = text =>
+        (text === '')
+            ? ""
+            : 'r.push("' + text.replace(/"/g, '\\"') + '");\n';
+
     let code = 'var r=[];\n';
-    const add = function (line, js) {
-        js
-            ? (code += 'r.push(' + line + ');\n')
-            : (code += line === '' ? '' : 'r.push("' + line.replace(/"/g, '\\"') + '");\n');
-        return add;
-    };
-    const lines = template.split('\n');
-    for (const lineIndex in lines) {
-        let line = lines[lineIndex];
+    template.split('\n').forEach(line => {
         if (line.startsWith(">")) {
             code += line.substr(1) + '\n'
         } else {
             let cursor = 0;
-            re.lastIndex = 0;
+            templateRE.lastIndex = 0;
             let match;
-            while (match = re.exec(line)) {
-                add(line.slice(cursor, match.index))(match[1], true);
+            while (match = templateRE.exec(line)) {
+                code += formatLiteral(line.slice(cursor, match.index));
+                code += formatExpression(match[1]);
                 cursor = match.index + match[0].length;
             }
-            add(line.substr(cursor, line.length - cursor), false);
+            code += formatLiteral(line.substr(cursor, line.length - cursor));
         }
-    }
+    });
     code += 'return r.join("");';
+
+    console.log(code);
 
     return Result.Okay(Function(code));
 };
 
 
 //= apply :: String -> Type -> Result Error String
-const apply = template => model =>
-    Result.Okay(compile(template).andThen(t => t.apply(model)));
+const apply = template => model => {
+    try {
+        return Result.Okay(compile(template).andThen(t => t.apply(model)));
+    } catch (e) {
+        return Result.Error(e.message);
+    }
+};
 
 
 module.exports = {

@@ -1,0 +1,11 @@
+My skills:
+> if(this.showSkills {
+>     for(var index in this.skills) {
+<a href="#"><%this.skills[index]%></a>
+>         for(var dot in this.dots) {
+<span><% this.dots[dot] %></span>
+>         }
+>      }
+> } else {
+<p>none</p>
+> }
