@@ -32,4 +32,15 @@ FileSystem.readFile(__dirname + "/TemplateData/0002.input.txt")
         });
     });
 
+Promise.all([
+    FileSystem.readFile(__dirname + "/TemplateData/0003.input.txt"),
+    FileSystem.readFile(__dirname + "/TemplateData/0003.output.txt")
+]).then(output => {
+    suite.case("a text template is able to reference modules provided they are included in the state", () => {
+        const testData = {
+            Result: Result
+        };
+        Assert.deepEqual(Template.apply(output[0])(testData), Result.Okay(output[1]));
+    });
+});
 

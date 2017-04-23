@@ -32,7 +32,7 @@ const compile = template => {
     });
     code += 'return r.join("");';
 
-    console.log(code);
+    // console.log(code);
 
     return Result.Okay(Function(code));
 };
