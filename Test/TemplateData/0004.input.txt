@@ -1,0 +1,8 @@
+const bob = something or others;
+
+Hello <% this.a %> - all the best from <% this.b %>
+
+> const mappedParameters = this.parameters.map(x => x + ' => ').join('');
+const apply = <% mappedParameters %>{
+
+const apply = <% this.parameters.map(x => x + ' => ').join('') %>{

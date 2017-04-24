@@ -1,0 +1,7 @@
+const bob = something or others;
+
+Hello Graeme - all the best from Richard
+
+const apply = a => b => c => {
+
+const apply = a => b => c => {

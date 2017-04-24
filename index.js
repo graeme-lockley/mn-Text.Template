@@ -1,7 +1,8 @@
 const Result = mrequire("core:Data.Result:1.0.0");
 
 
-const templateRE = /<%([^%>]+)?%>/g;
+const templateRE = /<%(.+?)%>/g;
+
 
 
 //= toJavaScript :: String -> Result String String
@@ -19,6 +20,11 @@ const toJavaScript = template => {
             code += line.substr(1) + '\n'
         } else {
             let cursor = 0;
+            if (line.startsWith("+")) {
+                cursor = 1;
+            } else {
+                code += 'r.push("\\n");';
+            }
             templateRE.lastIndex = 0;
             let match;
             while (match = templateRE.exec(line)) {
@@ -29,7 +35,7 @@ const toJavaScript = template => {
             code += formatLiteral(line.substr(cursor, line.length - cursor));
         }
     });
-    code += 'return r.join("");';
+    code += 'return r.join("").trim();';
 
     return Result.Okay(code);
 };

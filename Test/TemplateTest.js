@@ -43,3 +43,17 @@ Promise.all([
     });
 });
 
+Promise.all([
+    FileSystem.readFile(__dirname + "/TemplateData/0004.input.txt"),
+    FileSystem.readFile(__dirname + "/TemplateData/0004.output.txt")
+]).then(output => {
+    suite.case("a text template with all of the special cases", () => {
+        const state = {
+            a: "Graeme",
+            b: "Richard",
+            parameters: "a b c".split(" ")
+        };
+        Assert.deepEqual(Template.apply(output[0])(state), Result.Okay(output[1]));
+    });
+});
+
