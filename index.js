@@ -7,7 +7,7 @@ const templateRE = /<%(.+?)%>/g;
 
 //= toJavaScript :: String -> Result String String
 const toJavaScript = template => {
-    const formatExpression = text => 'r.push(' + text + ');\n';
+    const formatExpression = text => 'r.push(' + text.trim() + ');\n';
 
     const formatLiteral = text =>
         (text === '')
@@ -15,14 +15,14 @@ const toJavaScript = template => {
             : 'r.push("' + text.replace(/"/g, '\\"') + '");\n';
 
     let code = 'var r=[];\n';
-    template.split('\n').forEach(line => {
+    template.split('\n').forEach((line, index) => {
         if (line.startsWith(">")) {
             code += line.substr(1) + '\n'
         } else {
             let cursor = 0;
             if (line.startsWith("+")) {
                 cursor = 1;
-            } else {
+            } else if (index > 0) {
                 code += 'r.push("\\n");\n';
             }
             templateRE.lastIndex = 0;
@@ -35,7 +35,7 @@ const toJavaScript = template => {
             code += formatLiteral(line.substr(cursor, line.length - cursor));
         }
     });
-    code += 'return r.join("").trim();';
+    code += 'return r.join("");';
 
     return Result.Okay(code);
 };
@@ -50,7 +50,7 @@ const compile = template => {
 //= apply :: String -> Type -> Result Error String
 const apply = template => model => {
     try {
-        return Result.Okay(compile(template).andThen(t => t.apply(model)));
+        return compile(template).andThen(t => Result.Okay(t.apply(model)));
     } catch (e) {
         return Result.Error(e.message);
     }
