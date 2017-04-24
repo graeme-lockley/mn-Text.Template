@@ -23,7 +23,7 @@ const toJavaScript = template => {
             if (line.startsWith("+")) {
                 cursor = 1;
             } else {
-                code += 'r.push("\\n");';
+                code += 'r.push("\\n");\n';
             }
             templateRE.lastIndex = 0;
             let match;
